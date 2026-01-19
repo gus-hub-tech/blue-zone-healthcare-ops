@@ -58,3 +58,24 @@ After deployment, Terraform provides:
 - DB password is randomly generated and stored in AWS Secrets Manager.
 - Ensure SSH access is restricted in production environments.
 - Regularly rotate secrets and review IAM permissions.
+
+# Installing & PostgreSQL client
+To interact with the PostgreSQL database, you need to install the PostgreSQL client on yourEC2 instance.
+1. Connect to your EC2 instance via SSH:
+   ```bash
+   ssh -i /path/to/your-key.pem ubuntu@your-ec2-public-ip
+   ```
+2. Update the package list:   sudo apt-get update
+      sudo apt-get update
+   
+3. Install the PostgreSQL client:   sudo apt-get install -y postgresql
+   sudo apt-get install -y postgresql
+
+# Test Connectivity
+To test connectivity to the PostgreSQL database from your EC2 instance, follow these steps:
+1. Connect to your EC2 instance via SSH:
+   ssh -i /path/to/your-key.pem ubuntu@your-ec2-public-ip
+2. Retrieve the database credentials from AWS Secrets Manager:
+   ```bash
+    aws secretsmanager get-secret-value --secret-id your-secret-name --query 'SecretString' --output text
+   
