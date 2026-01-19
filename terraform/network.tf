@@ -21,17 +21,28 @@ resource "aws_subnet" "public_subnet" {
 }
 
 resource "aws_subnet" "private_subnet" {
-  vpc_id     = aws_vpc.healthcare_vpc.id
-  cidr_block = "10.0.102.0/24"
+  vpc_id            = aws_vpc.healthcare_vpc.id
+  cidr_block        = "10.0.102.0/24"
+  availability_zone = "af-south-1a"
 
   tags = {
-    Name = "private-subnet"
+    Name = "private-subnet-a"
+  }
+}
+
+resource "aws_subnet" "private_subnet_b" {
+  vpc_id            = aws_vpc.healthcare_vpc.id
+  cidr_block        = "10.0.103.0/24"
+  availability_zone = "af-south-1b"
+
+  tags = {
+    Name = "private-subnet-b"
   }
 }
 
 resource "aws_db_subnet_group" "db_subnet_group" {
   name       = "db-subnet-group"
-  subnet_ids = [aws_subnet.private_subnet.id]
+  subnet_ids = [aws_subnet.private_subnet.id, aws_subnet.private_subnet_b.id]
 
   tags = {
     Name = "db-subnet-group"
