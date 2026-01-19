@@ -8,7 +8,7 @@ A HIPAA-aligned 2-tier AWS infrastructure provisioned with Terraform, featuring 
 
 - **VPC**: Private virtual network (CIDR: 10.0.0.0/16) with DNS support enabled.
 - **Public Subnet**: Hosts the EC2 instance (t3.micro, Ubuntu 24.04) for application hosting, with public IP assignment.
-- **Private Subnet**: Hosts the encrypted RDS PostgreSQL instance (db.t3.micro), ensuring data privacy.
+- **Private Subnet**: Hosts the encrypted, multi-AZ RDS PostgreSQL instance (db.t3.micro) across two availability zones (af-south-1a and af-south-1b) for high availability.
 - **Security Groups**:
   - App Server SG: Allows SSH (port 22) from anywhere (restrict to specific IPs in production).
   - Database SG: Allows PostgreSQL traffic (port 5432) only from the App Server SG.
@@ -22,7 +22,7 @@ A HIPAA-aligned 2-tier AWS infrastructure provisioned with Terraform, featuring 
 |------------|--------------------------|-------------------------------|
 | Automation | GitHub Actions           | Automated audit trail of infrastructure changes. |
 | Compute    | AWS EC2 (t3.micro)      | Hosted in Public Subnet with least privilege access. |
-| Database   | Amazon RDS (PostgreSQL) | Encrypted at rest, isolated in Private Subnet. |
+| Database   | Amazon RDS (PostgreSQL) | Encrypted at rest, multi-AZ deployment for high availability. |
 | State      | S3 Remote Backend       | Versioned and encrypted infrastructure state. |
 | Secrets    | AWS Secrets Manager     | Secure credential storage and retrieval. |
 
