@@ -1,6 +1,7 @@
 # 1. Create the Security Group for the EC2 Server
 resource "aws_security_group" "app-server_sg" {
-  name = "app-server-sg"
+  name   = "app-server-sg"
+  vpc_id = aws_vpc.healthcare_vpc.id
   
   ingress {
     from_port   = 22
@@ -19,7 +20,8 @@ resource "aws_security_group" "app-server_sg" {
 
 # 2. Create the Security Group for the Database
 resource "aws_security_group" "database_sg" {
-  name = "database-sg"
+  name   = "database-sg"
+  vpc_id = aws_vpc.healthcare_vpc.id
   
   ingress {
     from_port       = 5432
