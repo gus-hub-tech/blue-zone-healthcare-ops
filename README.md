@@ -58,5 +58,3 @@ After deployment, Terraform provides:
 - DB password is randomly generated and stored in AWS Secrets Manager.
 - Ensure SSH access is restricted in production environments.
 - Regularly rotate secrets and review IAM permissions.
-
-Tags/Topics: terraform, aws, devops, healthcare-it, infrastructure-as-code, hipaa-compliance.
