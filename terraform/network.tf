@@ -30,9 +30,19 @@ resource "aws_subnet" "healthcare_private_subnet_a" {
   }
 }
 
+resource "aws_subnet" "healthcare_private_subnet_b" {
+  vpc_id            = aws_vpc.healthcare_vpc.id
+  cidr_block        = "10.0.103.0/24"
+  availability_zone = "af-south-1b"
+
+  tags = {
+    Name = "healthcare-private-subnet-b"
+  }
+}
+
 resource "aws_db_subnet_group" "db_subnet_group" {
   name       = "healthcare-db-subnet-group"
-  subnet_ids = [aws_subnet.healthcare_private_subnet_a.id]
+  subnet_ids = [aws_subnet.healthcare_private_subnet_a.id, aws_subnet.healthcare_private_subnet_b.id]
 
   tags = {
     Name = "healthcare-db-subnet-group"
