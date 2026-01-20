@@ -10,6 +10,13 @@ resource "aws_security_group" "app-server_sg" {
     cidr_blocks = ["0.0.0.0/0"] # Allows SSH (Ideally limit this to your IP)
   }
 
+  ingress {
+    from_port   = 8000
+    to_port     = 8000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Allows HTTP access to FastAPI app
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
