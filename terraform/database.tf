@@ -35,7 +35,7 @@ resource "aws_db_instance" "patient_db" {
   password               = jsondecode(data.aws_secretsmanager_secret_version.db_secret.secret_string)["password"]
   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group.name
   vpc_security_group_ids = [aws_security_group.database_sg.id]
-  multi_az               = true
+  multi_az               = false
   
   storage_encrypted    = true   # Essential for Healthcare
   publicly_accessible  = false  # HIPAA requirement: DB must be private
