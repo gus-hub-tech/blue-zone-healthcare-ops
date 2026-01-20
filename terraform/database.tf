@@ -4,9 +4,16 @@ resource "random_password" "db_password" {
   special = true
 }
 
+# Generate a random suffix for the secret name
+resource "random_string" "secret_suffix" {
+  length  = 8
+  special = false
+  upper   = false
+}
+
 # Create a secret in AWS Secrets Manager for the DB credentials
 resource "aws_secretsmanager_secret" "db_secret" {
-  name = "db-credentials-secret"
+  name = "db-credentials-secret-${random_string.secret_suffix.result}"
 }
 
 # Create a version of the secret with the credentials
