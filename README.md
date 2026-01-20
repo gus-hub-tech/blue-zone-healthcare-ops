@@ -2,7 +2,7 @@
 
 ## Project Description
 
-A HIPAA-aligned 2-tier AWS infrastructure provisioned with Terraform, featuring an encrypted RDS PostgreSQL database and an isolated EC2 application server. Utilizes AWS Secrets Manager for secure credential management and S3 for remote state storage.
+A HIPAA-aligned 2-tier AWS infrastructure provisioned with Terraform, featuring an encrypted RDS PostgreSQL database and an isolated EC2 application server running a FastAPI app. Utilizes AWS Secrets Manager for secure credential management and S3 for remote state storage.
 
 ## Architecture
 
@@ -13,7 +13,7 @@ The infrastructure follows a 2-tier architecture: a public-facing application ti
 - **Public Subnet**: Hosts the EC2 instance (t3.micro, Ubuntu 24.04) with public IP.
 - **Private Subnets**: Host the encrypted, multi-AZ RDS PostgreSQL (db.t3.micro) across af-south-1a and af-south-1b.
 - **Security Groups**:
-  - App Server SG: Allows SSH (port 22) from anywhere (restrict in production).
+  - App Server SG: Allows SSH (port 22) and HTTP (port 8000) from anywhere (restrict in production).
   - Database SG: Allows PostgreSQL (port 5432) from App Server SG only.
 - **Internet Gateway & Route Tables**: Enable internet access for the public subnet.
 - **Secrets Manager**: Stores DB credentials securely.
@@ -74,6 +74,8 @@ S3 Bucket (healthcare-ops-state)
 3. Run `terraform plan` to review changes.
 4. Run `terraform apply` to deploy.
 
+After deployment, the FastAPI app will be accessible at the EC2 instance's public IP on port 8000.
+
 ## CI/CD
 
 Optional: Automated deployment via GitHub Actions on pushes/PRs to `main` (init, validate, plan). Apply manually.
@@ -128,3 +130,15 @@ SELECT * FROM access_logs;
 ```bash
 \q
 ```
+
+The "Software" Path (The Application)
+Right now, you have an empty server. Let’s give it a purpose.
+
+The Task: Write a tiny Python API (using Flask or FastAPI) that sits on the EC2.
+
+The Goal: Instead of typing SQL commands, you can send a "Patient Log" via a simple web request.
+
+Why: This demonstrates a "Full Stack" DevOps mentality—you aren't just building the pipes; you know how the water (data) flows through them.
+
+1. The Database Schema (Medical Standard)
+In healthcare, an audit log must follow a strict trail. We’ll create a table that tracks Who accessed Which record and When.
