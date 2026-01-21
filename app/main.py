@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy import create_engine
-from . import models
+import models
 import os
 
 app = FastAPI(title="Blue-Zone Audit Logger")
