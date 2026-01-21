@@ -17,7 +17,9 @@ resource "aws_instance" "app_server" {
 
   provisioner "remote-exec" {
     inline = [
+      "cd "/home/ec2-user",
       "git clone https://github.com/gus-hub-tech/blue-zone-healthcare-ops.git"
+      "cd blue-zone-healthcare-ops",
     ]
   }
 
