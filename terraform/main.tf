@@ -2,7 +2,7 @@ data "aws_ami" "ubuntu" {
   most_recent = true
 
   filter {
-    name = "name"
+    name   = "name"
     values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
   }
 
@@ -15,9 +15,16 @@ resource "aws_instance" "app_server" {
   subnet_id              = aws_subnet.healthcare_public_subnet.id
   vpc_security_group_ids = [aws_security_group.app-server_sg.id]
 
+  provisioner "remote-exec" {
+    inline = [
+      "git clone https://github.com/gus-hub-tech/blue-zone-healthcare-ops.git"
+    ]
+  }
+
   user_data = <<-EOF
     #!/bin/bash
     sudo apt update -y
+    sudo apt install git -y
     sudo apt install python3-pip -y
     pip3 install fastapi uvicorn sqlalchemy psycopg2-binary
     
@@ -33,5 +40,3 @@ resource "aws_instance" "app_server" {
     Name = "blue-zone"
   }
 }
-
-
