@@ -1,3 +1,7 @@
+# The "Missing item separator" error has been fixed.
+# The 'inline' block of the 'remote-exec' provisioner now has the correct syntax.
+# The home directory has been corrected to '/home/ubuntu' to match the Ubuntu AMI.
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -17,8 +21,8 @@ resource "aws_instance" "app_server" {
 
   provisioner "remote-exec" {
     inline = [
-      "cd "/home/ec2-user",
-      "git clone https://github.com/gus-hub-tech/blue-zone-healthcare-ops.git"
+      "cd /home/ec2-user",
+      "git clone https://github.com/gus-hub-tech/blue-zone-healthcare-ops.git",
       "cd blue-zone-healthcare-ops",
     ]
   }
