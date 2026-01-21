@@ -2,7 +2,7 @@
 
 ## Project Description
 
-A HIPAA-aligned 2-tier AWS infrastructure provisioned with Terraform, featuring an encrypted RDS PostgreSQL database and an isolated EC2 application server running a FastAPI app. Utilizes AWS Secrets Manager for secure credential management and S3 for remote state storage.
+A HIPAA-aligned 2-tier AWS infrastructure provisioned with Terraform, featuring an encrypted RDS PostgreSQL database and an isolated EC2 application server running a FastAPI audit logging application. Utilizes AWS Secrets Manager for secure credential management and S3 for remote state storage. The application provides RESTful API endpoints for patient record access logging, ensuring compliance with healthcare audit requirements.
 
 ## Architecture
 
@@ -63,9 +63,15 @@ S3 Bucket (healthcare-ops-state)
 
 ## Prerequisites
 
+### Infrastructure Prerequisites
 - AWS CLI configured with permissions for EC2, RDS, VPC, Secrets Manager, S3.
 - Terraform v1.0+ installed.
 - S3 bucket `healthcare-ops-state` in af-south-1 (create manually if needed).
+
+### Application Prerequisites
+- Python 3.8+ installed on the EC2 instance.
+- pip for package management.
+- Git for cloning the application repository.
 
 ## Usage
 
@@ -96,6 +102,137 @@ After deployment:
 - Restrict SSH access in production.
 - Rotate secrets and review IAM permissions regularly.
 
+## Application
+
+### Database Schema
+
+The application uses a PostgreSQL database with the following schema for audit logging:
+
+- **patient_audit_logs** table:
+  - `id`: SERIAL PRIMARY KEY
+  - `doctor_id`: VARCHAR(100) NOT NULL
+  - `patient_id`: VARCHAR(100) NOT NULL
+  - `action`: VARCHAR(50) NOT NULL (e.g., 'ACCESS', 'MODIFY')
+  - `timestamp`: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+### Application Setup
+
+1. SSH into the EC2 instance: `ssh -i key.pem ubuntu@<ec2-public-ip>`
+2. Install Python and pip if not already installed: `sudo apt update && sudo apt install -y python3 python3-pip`
+3. Clone the repository: `git clone <repository-url> && cd <repo-directory>/app`
+4. Install dependencies: `pip3 install -r requirements.txt` (assuming requirements.txt exists with fastapi, uvicorn, sqlalchemy, psycopg2-binary, python-dotenv, pydantic)
+5. Set environment variables:
+   ```bash
+   export DATABASE_URL="postgresql://adminuser:<password>@<db_endpoint>/audit_logs"
+   ```
+   Obtain the password from AWS Secrets Manager.
+6. Run the application: `uvicorn main:app --host 0.0.0.0 --port 8000`
+
+### API Endpoints
+
+- **POST /log-access**: Logs patient access events.
+  - Request Body (JSON):
+    ```json
+    {
+      "doctor_id": "string",
+      "patient_id": "string",
+      "action": "string"
+    }
+    ```
+  - Response: Success message or error.
+
+The application provides a RESTful API for logging patient record access, ensuring compliance with HIPAA audit requirements.
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+#### ImportError: attempted relative import with no known parent package
+**Problem**: When running `uvicorn main:app`, you get an import error for relative imports.
+
+**Solution**: The import in `main.py` needs to be absolute. Change:
+```python
+from . import models
+```
+To:
+```python
+import models
+```
+
+#### Database Connection Errors
+**Problem**: App fails to start with database-related errors.
+
+**Solution**: 
+1. Ensure DATABASE_URL is set correctly with URL-encoded password (special characters like `< > & ? %` need encoding).
+2. Example encoding: `<` becomes `%3C`, `>` becomes `%3E`, `&` becomes `%26`, etc.
+3. Verify credentials from AWS Secrets Manager are correct.
+
+#### Site Can't Be Reached in Browser
+**Problem**: Browser shows "site can't be reached" when accessing `http://<ec2-ip>:8000/docs`.
+
+**Solution**:
+1. Confirm the app is running on EC2 (check for startup messages in SSH terminal).
+2. Verify the correct EC2 public IP from `terraform output`.
+3. Ensure port 8000 is accessible (check EC2 security group).
+4. App must run on EC2 instance, not locally, as it connects to AWS RDS.
+
+#### AWS CLI Permission Errors
+**Problem**: `aws secretsmanager get-secret-value` fails with permission errors.
+
+**Solution**: Configure AWS CLI credentials on EC2:
+```bash
+aws configure
+```
+Enter your access key, secret key, region (af-south-1), and output format.
+
+#### Requirements Installation Issues
+**Problem**: `pip3 install -r requirements.txt` fails with "No such file or directory".
+
+**Solution**: Ensure you're in the correct directory (`blue-zone-healthcare-ops/app`) and the file exists. Pull latest changes from GitHub if needed.
+
+### Step-by-Step Deployment Guide
+
+1. **Get Terraform outputs**:
+   ```bash
+   terraform output
+   ```
+   Note the `ec2_public_ip` and `db_endpoint`.
+
+2. **SSH into EC2**:
+   ```bash
+   ssh -i <key-pair>.pem ubuntu@<ec2_public_ip>
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   sudo apt update && sudo apt install -y python3 python3-pip git
+   ```
+
+4. **Clone and setup app**:
+   ```bash
+   git clone <repo-url>
+   cd <repo>/app
+   pip3 install -r requirements.txt
+   ```
+
+5. **Get database password**:
+   ```bash
+   aws secretsmanager get-secret-value --secret-id <secret-name> --query SecretString --output text
+   ```
+
+6. **Set environment**:
+   ```bash
+   export DATABASE_URL="postgresql://adminuser:<encoded-password>@<db_endpoint>/audit_logs"
+   ```
+
+7. **Run the app**:
+   ```bash
+   uvicorn main:app --host 0.0.0.0 --port 8000
+   ```
+
+8. **Access in browser**:
+   Go to `http://<ec2_public_ip>:8000/docs`
+
 ## Database Connection
 
 1. SSH into EC2: `ssh -i key.pem ubuntu@ec2-public-ip`
@@ -115,30 +252,18 @@ CREATE TABLE patient_records (
 ```
 6. Insert data
 ```bash
-INSERT INTO access_logs (doctor_id, patient_id) VALUES ('DR_SMITH_99', 'PATIENT_X_001');
+INSERT INTO patient_audit_logs (doctor_id, patient_id, action, timestamp) VALUES ('DR_SMITH_99', 'PATIENT_X_001', 'ACCESS', CURRENT_TIMESTAMP);
 ```
 
 7. View record
 ```bash
-SELECT * FROM access_logs;
+SELECT * FROM patient_audit_logs;
 ```
 8. Verify final state
 ```bash
-SELECT * FROM access_logs;
+SELECT * FROM patient_audit_logs;
 ```
 9. Exit database
 ```bash
 \q
 ```
-
-The "Software" Path (The Application)
-Right now, you have an empty server. Let’s give it a purpose.
-
-The Task: Write a tiny Python API (using Flask or FastAPI) that sits on the EC2.
-
-The Goal: Instead of typing SQL commands, you can send a "Patient Log" via a simple web request.
-
-Why: This demonstrates a "Full Stack" DevOps mentality—you aren't just building the pipes; you know how the water (data) flows through them.
-
-1. The Database Schema (Medical Standard)
-In healthcare, an audit log must follow a strict trail. We’ll create a table that tracks Who accessed Which record and When.
