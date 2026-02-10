@@ -1,0 +1,4 @@
+"""Routes package"""
+from app.routes import health, patients, appointments, medical_records, staff, prescriptions, billing, inventory, departments
+
+__all__ = ['health', 'patients', 'appointments', 'medical_records', 'staff', 'prescriptions', 'billing', 'inventory', 'departments']
