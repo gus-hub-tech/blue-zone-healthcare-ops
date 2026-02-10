@@ -6,8 +6,32 @@ Complete guide for setting up and running Blue Zone Healthcare Ops locally.
 
 - Python 3.9+
 - Node.js 14+
-- PostgreSQL 13+ (or Docker)
+- Docker (for PostgreSQL)
 - Git
+
+### Check Prerequisites
+
+```bash
+# Check Docker
+docker --version
+# Expected: Docker version 20.x.x or higher
+
+# Check Python
+python3 --version
+# Expected: Python 3.9.x or higher
+
+# Check Node.js (optional, for frontend)
+node --version
+# Expected: v14.x.x or higher
+```
+
+**If Docker is not installed:**
+- Ubuntu/Debian: `sudo apt install docker.io && sudo systemctl start docker`
+- macOS: Download from https://www.docker.com/products/docker-desktop
+
+**If Python is not installed:**
+- Ubuntu/Debian: `sudo apt install python3 python3-pip python3-venv`
+- macOS: `brew install python3`
 
 ---
 
@@ -52,55 +76,170 @@ npm start
 
 ---
 
-## Backend Setup
+## Detailed Backend Setup (Step-by-Step)
 
-### 1. Create Virtual Environment
-
-```bash
-python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-```
-
-### 2. Install Dependencies
+### Step 1: Navigate to Project Directory
 
 ```bash
-cd app
-pip install -r requirements.txt
+cd /path/to/blue-zone-healthcare-ops
+pwd
+# Expected output: /path/to/blue-zone-healthcare-ops
 ```
 
-### 3. Setup Database
+### Step 2: Setup PostgreSQL Database with Docker
 
-#### Option 1: Docker (Recommended)
+#### 2.1 Check if container already exists
+
+```bash
+docker ps -a | grep local-postgres
+```
+
+**If you see output:** Container exists, skip to step 2.3
+
+**If no output:** Continue to step 2.2
+
+#### 2.2 Create and start PostgreSQL container
 
 ```bash
 docker run --name local-postgres \
   -e POSTGRES_PASSWORD=devpass \
   -e POSTGRES_DB=audit_logs \
   -e POSTGRES_USER=adminuser \
-  -p 5432:5432 -d postgres:15
+  -p 5432:5432 \
+  -d postgres:15
 ```
 
-#### Option 2: Local PostgreSQL
+**Expected output:** A long container ID like `a1b2c3d4e5f6...`
+
+**What this does:**
+- `--name local-postgres` - Names the container
+- `-e POSTGRES_PASSWORD=devpass` - Sets password
+- `-e POSTGRES_DB=audit_logs` - Creates database
+- `-e POSTGRES_USER=adminuser` - Creates user
+- `-p 5432:5432` - Maps port 5432
+- `-d` - Runs in background
+- `postgres:15` - Uses PostgreSQL version 15
+
+#### 2.3 Verify container is running
 
 ```bash
-# Access PostgreSQL
-sudo -u postgres psql
-
-# Create database and user
-CREATE DATABASE audit_logs;
-CREATE USER adminuser WITH PASSWORD 'devpass';
-GRANT ALL PRIVILEGES ON DATABASE audit_logs TO adminuser;
-\q
+docker ps | grep local-postgres
 ```
 
-### 4. Configure Environment
+**Expected output:**
+```
+CONTAINER ID   IMAGE         STATUS         PORTS                    NAMES
+a1b2c3d4e5f6   postgres:15   Up 2 seconds   0.0.0.0:5432->5432/tcp   local-postgres
+```
+
+**If container is not running:**
+```bash
+docker start local-postgres
+docker ps | grep local-postgres
+```
+
+#### 2.4 Test database connection
 
 ```bash
-# Set DATABASE_URL
+docker exec -it local-postgres psql -U adminuser -d audit_logs -c "SELECT version();"
+```
+
+**Expected output:** PostgreSQL version information
+
+**If error:** Wait 5 seconds and try again (database might still be starting)
+
+### Step 3: Setup Python Virtual Environment
+
+#### 3.1 Navigate to app directory
+
+```bash
+cd app
+pwd
+# Expected output: /path/to/blue-zone-healthcare-ops/app
+```
+
+#### 3.2 Create virtual environment
+
+```bash
+python3 -m venv venv
+```
+
+**Expected output:** No output (silent success)
+
+**Verify it was created:**
+```bash
+ls -la venv
+# Expected: You should see bin/, lib/, include/ directories
+```
+
+#### 3.3 Activate virtual environment
+
+```bash
+source venv/bin/activate
+# Windows: venv\Scripts\activate
+```
+
+**Expected output:** Your prompt should change to show `(venv)` at the beginning:
+```
+(venv) user@computer:~/blue-zone-healthcare-ops/app$
+```
+
+#### 3.4 Verify virtual environment is active
+
+```bash
+which python
+# Expected output: /path/to/blue-zone-healthcare-ops/app/venv/bin/python
+```
+
+### Step 4: Install Python Dependencies
+
+#### 4.1 Install all required packages
+
+```bash
+pip install -r requirements.txt
+```
+
+**Expected output:** Lots of installation messages, ending with:
+```
+Successfully installed fastapi-0.104.1 uvicorn-0.24.0 sqlalchemy-2.0.23 ...
+```
+
+**This will take 1-2 minutes**
+
+#### 4.2 Verify installations
+
+```bash
+pip list | grep -E "fastapi|uvicorn|sqlalchemy"
+```
+
+**Expected output:**
+```
+fastapi          0.104.1
+sqlalchemy       2.0.23
+uvicorn          0.24.0
+```
+
+### Step 5: Configure Database Connection
+
+#### 5.1 Set DATABASE_URL environment variable
+
+```bash
 export DATABASE_URL="postgresql://adminuser:devpass@localhost:5432/audit_logs"
+```
 
-# Or create .env file in app/ directory
-cat > app/.env << EOF
+**Expected output:** No output (silent success)
+
+#### 5.2 Verify environment variable is set
+
+```bash
+echo $DATABASE_URL
+# Expected output: postgresql://adminuser:devpass@localhost:5432/audit_logs
+```
+
+#### 5.3 Create .env file (recommended)
+
+```bash
+cat > .env << 'EOF'
 DATABASE_URL=postgresql://adminuser:devpass@localhost:5432/audit_logs
 DEBUG=True
 LOG_LEVEL=INFO
@@ -112,20 +251,154 @@ DB_POOL_RECYCLE=3600
 EOF
 ```
 
-### 5. Initialize Database
+**Expected output:** No output (silent success)
+
+#### 5.4 Verify .env file was created
+
+```bash
+cat .env
+# Expected output: The contents of the .env file
+```
+
+### Step 6: Initialize Database Tables
+
+#### 6.1 Run database initialization
 
 ```bash
 python -c "from database import init_db; init_db()"
 ```
 
-### 6. Run Application
+**Expected output:**
+```
+Creating all database tables...
+Database initialized successfully!
+```
+
+**If you see errors:** Check that:
+- Virtual environment is activated (you see `(venv)`)
+- DATABASE_URL is set correctly
+- PostgreSQL container is running
+
+#### 6.2 Verify tables were created
 
 ```bash
-# Development mode (auto-reload)
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+docker exec -it local-postgres psql -U adminuser -d audit_logs -c "\dt"
+```
 
-# Production mode
-uvicorn main:app --host 0.0.0.0 --port 8000
+**Expected output:** List of tables like:
+```
+                List of relations
+ Schema |        Name         | Type  |   Owner
+--------+---------------------+-------+-----------
+ public | appointments        | table | adminuser
+ public | patients            | table | adminuser
+ public | staff               | table | adminuser
+ ...
+```
+
+### Step 7: Run the Backend Application
+
+#### 7.1 Start the FastAPI server
+
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+**Expected output:**
+```
+INFO:     Will watch for changes in these directories: ['/path/to/app']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [12345] using StatReload
+INFO:     Started server process [12346]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
+
+**Keep this terminal open! The server is now running.**
+
+### Step 8: Test the Application
+
+#### 8.1 Open a NEW terminal (keep the server running)
+
+Press `Ctrl+Shift+T` or open a new terminal window
+
+#### 8.2 Test health endpoint
+
+```bash
+curl http://localhost:8000/health/
+```
+
+**Expected output:**
+```json
+{"status":"healthy"}
+```
+
+#### 8.3 Test database health endpoint
+
+```bash
+curl http://localhost:8000/health/db
+```
+
+**Expected output:**
+```json
+{"status":"healthy","database":"connected"}
+```
+
+#### 8.4 Open API documentation in browser
+
+Open your web browser and go to:
+```
+http://localhost:8000/docs
+```
+
+**Expected result:** You should see the Swagger UI with all API endpoints
+
+### Step 9: Verify Everything is Working
+
+```bash
+# Check Docker container
+docker ps | grep local-postgres
+
+# Check if port 8000 is in use (backend)
+lsof -i :8000
+
+# Check if port 5432 is in use (database)
+lsof -i :5432
+```
+
+**All commands should show output**
+
+### SUCCESS! 🎉
+
+Your local development environment is now running!
+
+**What's Running:**
+- ✅ PostgreSQL database on port 5432 (Docker)
+- ✅ FastAPI backend on port 8000
+- ✅ All database tables created
+- ✅ API documentation at http://localhost:8000/docs
+
+### To Stop Everything:
+
+```bash
+# Stop backend (in the terminal running uvicorn)
+Press Ctrl+C
+
+# Stop database
+docker stop local-postgres
+```
+
+### To Start Again Later:
+
+```bash
+# Start database
+docker start local-postgres
+
+# Start backend
+cd /path/to/blue-zone-healthcare-ops/app
+source venv/bin/activate
+export DATABASE_URL="postgresql://adminuser:devpass@localhost:5432/audit_logs"
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ---
@@ -167,24 +440,33 @@ npm run build
 
 ### Backend Tests
 
+**Ensure virtual environment is activated and you're in the app directory:**
+
+```bash
+cd /path/to/blue-zone-healthcare-ops/app
+source venv/bin/activate
+```
+
+**Run tests:**
+
 ```bash
 # All tests
-pytest app/tests -v
+pytest tests/ -v
 
 # Unit tests only
-pytest app/tests/unit -v
+pytest tests/unit -v
 
 # Property-based tests
-pytest app/tests/properties -v
+pytest tests/properties -v
 
 # Integration tests
-pytest app/tests/integration -v
+pytest tests/integration -v
 
 # With coverage
-pytest app/tests --cov=app --cov-report=html
+pytest tests/ --cov=app --cov-report=html
 
 # Specific test file
-pytest app/tests/unit/test_patient_service.py -v
+pytest tests/unit/test_patient_service.py -v
 ```
 
 ### Frontend Tests
