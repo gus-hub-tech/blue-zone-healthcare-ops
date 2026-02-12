@@ -2,7 +2,49 @@
 
 Complete guide to run and start the Blue Zone Healthcare Ops application.
 
+## Quick Start (Complete Workflow)
+
+If you want to get started immediately, run these commands in order:
+
+```bash
+# 1. Navigate to project
+cd ~/Projects/personal-projects/blue-zone-healthcare-ops
+
+# 2. Start database
+docker run --name healthcare-ops-postgres \
+  -e POSTGRES_PASSWORD=devpass \
+  -e POSTGRES_DB=audit_logs \
+  -e POSTGRES_USER=adminuser \
+  -p 5432:5432 \
+  -d postgres:15
+
+# 3. Navigate to app directory
+cd app
+
+# 4. Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# 5. Install dependencies
+pip install -r requirements.txt
+
+# 6. Set DATABASE_URL
+export DATABASE_URL="postgresql://adminuser:devpass@localhost:5432/audit_logs"
+
+# 7. Initialize database
+python3 -c "from database import init_db; init_db()"
+
+# 8. Run application
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+**Access the API:** http://localhost:8000/docs
+
+---
+
 ## Installation & Setup
+
+Detailed step-by-step instructions for each part of the setup process.
 
 ### Step 1: Get the Code
 
@@ -24,12 +66,13 @@ cd blue-zone-healthcare-ops
 
 ```bash
 # Create and start PostgreSQL container
-docker run --name local-postgres \
+docker run --name healthcare-ops-postgres \
   -e POSTGRES_PASSWORD=devpass \
   -e POSTGRES_DB=audit_logs \
   -e POSTGRES_USER=adminuser \
   -p 5432:5432 \
   -d postgres:15
+
 ```
 
 **Explanation:**
@@ -43,13 +86,13 @@ docker run --name local-postgres \
 
 **Verify it's running:**
 ```bash
-docker ps | grep local-postgres
-# You should see: local-postgres   postgres:15   Up X seconds
+docker ps | grep healthcare-ops-postgres
+# You should see: healthcare-ops-postgres   postgres:15   Up X seconds
 ```
 
 **If container already exists:**
 ```bash
-docker start local-postgres
+docker start healthcare-ops-postgres
 ```
 
 ### Step 3: Setup Python Backend
@@ -119,19 +162,21 @@ echo $DATABASE_URL
 
 **What this does:** Creates all the tables (patients, appointments, staff, etc.) in the database.
 
+**Important:** You must be in the `app/` directory with the virtual environment activated.
+
 ```bash
-python -c "from database import init_db; init_db()"
+# Make sure you're in the app directory with venv activated
+python3 -c "from database import init_db; init_db()"
 ```
 
 **Expected output:**
 ```
-Creating all database tables...
-Database initialized successfully!
+Database tables initialized
 ```
 
 **Verify tables were created:**
 ```bash
-docker exec -it local-postgres psql -U adminuser -d audit_logs -c "\dt"
+docker exec -it healthcare-ops-postgres psql -U adminuser -d audit_logs -c "\dt"
 ```
 
 **You should see tables like:**
@@ -322,14 +367,14 @@ Press Ctrl+C
 
 ### Stop Database
 ```bash
-docker stop local-postgres
+docker stop healthcare-ops-postgres
 ```
 
 ### Stop Everything
 ```bash
 # Stop all running processes (Ctrl+C in each terminal)
 # Then stop database
-docker stop local-postgres
+docker stop healthcare-ops-postgres
 ```
 
 **Note:** Stopping the database does NOT delete your data. It's preserved in the Docker container.
@@ -342,10 +387,10 @@ docker stop local-postgres
 
 ```bash
 # 1. Start database (if not running)
-docker start local-postgres
+docker start healthcare-ops-postgres
 
-# 2. Navigate to project
-cd ~/Projects/blue-zone-healthcare-ops/app
+# 2. Navigate to project app directory
+cd ~/Projects/personal-projects/blue-zone-healthcare-ops/app
 
 # 3. Activate virtual environment
 source venv/bin/activate
