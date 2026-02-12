@@ -4,9 +4,9 @@ from pydantic import BaseModel, EmailStr
 from datetime import date
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.services.patient_service import PatientService
-from app.models.patient import PatientStatus
+from database import get_db
+from services.patient_service import PatientService
+from models.patient import PatientStatus
 
 router = APIRouter(prefix="/patients", tags=["patients"])
 

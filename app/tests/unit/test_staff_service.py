@@ -1,9 +1,9 @@
 """Unit tests for staff service"""
 import pytest
 from datetime import date
-from app.services.staff_service import StaffService
-from app.models.staff import StaffRole, StaffStatus
-from app.database import SessionLocal
+from services.staff_service import StaffService
+from models.staff import StaffRole, StaffStatus
+from database import SessionLocal
 import uuid
 
 @pytest.fixture

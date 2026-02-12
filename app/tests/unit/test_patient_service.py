@@ -1,9 +1,9 @@
 """Unit tests for patient service"""
 import pytest
 from datetime import date
-from app.services.patient_service import PatientService
-from app.models.patient import PatientStatus
-from app.database import SessionLocal
+from services.patient_service import PatientService
+from models.patient import PatientStatus
+from database import SessionLocal
 import uuid
 
 @pytest.fixture

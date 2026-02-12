@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from app.models.medical_record import MedicalRecord, Diagnosis, Treatment, ClinicalNote
+from models.medical_record import MedicalRecord, Diagnosis, Treatment, ClinicalNote
 import logging
 
 logger = logging.getLogger(__name__)

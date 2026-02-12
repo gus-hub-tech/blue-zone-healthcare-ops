@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from decimal import Decimal
 from typing import List
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.services.billing_service import BillingService
+from database import get_db
+from services.billing_service import BillingService
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 
@@ -50,7 +50,7 @@ def get_billing_record(billing_id: str, db: Session = Depends(get_db)):
 @router.get("/patient/{patient_id}/billing")
 def get_patient_billing(patient_id: str, db: Session = Depends(get_db)):
     """Get patient's billing records"""
-    from app.models.billing import BillingRecord
+    from models.billing import BillingRecord
     db_records = db.query(BillingRecord).filter(BillingRecord.patient_id == patient_id).all()
     return db_records
 

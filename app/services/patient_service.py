@@ -4,8 +4,8 @@ from datetime import datetime
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from app.models.patient import Patient, PatientStatus
-from app.models.audit import PatientAuditLog
+from models.patient import Patient, PatientStatus
+from models.audit import PatientAuditLog
 import logging
 
 logger = logging.getLogger(__name__)

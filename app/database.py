@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import QueuePool
 import logging
-from app.config import settings
+from config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ def get_db() -> Session:
 
 def init_db():
     """Initialize database tables"""
-    from app.models import Base
+    from models import Base
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables initialized")
 

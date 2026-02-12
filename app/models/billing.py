@@ -3,7 +3,7 @@ from sqlalchemy import Column, String, DateTime, ForeignKey, Numeric, Enum, Bool
 from sqlalchemy.sql import func
 from datetime import datetime
 import enum
-from app.models import Base
+from models import Base
 
 class BillingStatus(str, enum.Enum):
     """Billing status enumeration"""

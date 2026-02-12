@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from typing import List
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.services.prescription_service import PrescriptionService
+from database import get_db
+from services.prescription_service import PrescriptionService
 
 router = APIRouter(prefix="/prescriptions", tags=["prescriptions"])
 

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from app.models.appointment import Appointment, AppointmentSlot, AppointmentStatus
+from models.appointment import Appointment, AppointmentSlot, AppointmentStatus
 import logging
 
 logger = logging.getLogger(__name__)

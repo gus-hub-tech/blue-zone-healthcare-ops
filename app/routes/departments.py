@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from decimal import Decimal
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.services.department_service import DepartmentService
+from database import get_db
+from services.department_service import DepartmentService
 
 router = APIRouter(prefix="/departments", tags=["departments"])
 
@@ -80,6 +80,6 @@ def get_department_metrics(dept_id: str, db: Session = Depends(get_db)):
 @router.get("", response_model=List[DepartmentResponse])
 def list_departments(db: Session = Depends(get_db)):
     """List all departments"""
-    from app.models.department import Department
+    from models.department import Department
     depts = db.query(Department).all()
     return depts

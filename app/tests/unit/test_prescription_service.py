@@ -1,10 +1,10 @@
 """Unit tests for prescription service"""
 import pytest
 from datetime import datetime
-from app.services.prescription_service import PrescriptionService
-from app.services.inventory_service import InventoryService
-from app.models.prescription import PrescriptionStatus
-from app.database import SessionLocal
+from services.prescription_service import PrescriptionService
+from services.inventory_service import InventoryService
+from models.prescription import PrescriptionStatus
+from database import SessionLocal
 
 @pytest.fixture
 def db():

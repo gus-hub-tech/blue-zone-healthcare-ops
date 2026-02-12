@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.services.staff_service import StaffService
+from database import get_db
+from services.staff_service import StaffService
 
 router = APIRouter(prefix="/staff", tags=["staff"])
 

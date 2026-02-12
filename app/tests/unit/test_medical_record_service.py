@@ -1,9 +1,9 @@
 """Unit tests for medical record service"""
 import pytest
 from datetime import datetime, date
-from app.services.medical_record_service import MedicalRecordService
-from app.models.medical_record import MedicalRecord
-from app.database import SessionLocal
+from services.medical_record_service import MedicalRecordService
+from models.medical_record import MedicalRecord
+from database import SessionLocal
 import uuid
 
 @pytest.fixture

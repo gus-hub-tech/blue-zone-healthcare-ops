@@ -2,7 +2,7 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
 from datetime import datetime
-from app.models import Base
+from models import Base
 
 class PatientAuditLog(Base):
     """Patient audit log model"""

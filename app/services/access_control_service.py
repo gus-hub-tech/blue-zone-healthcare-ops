@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from app.models.access_control import User, Role, AccessLog, UserRole, AccessLogAction
-from app.config import settings
+from models.access_control import User, Role, AccessLog, UserRole, AccessLogAction
+from config import settings
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 import logging

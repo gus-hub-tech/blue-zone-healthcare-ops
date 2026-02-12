@@ -1,9 +1,9 @@
 """Unit tests for appointment service"""
 import pytest
 from datetime import datetime, timedelta
-from app.services.appointment_service import AppointmentService
-from app.models.appointment import AppointmentStatus
-from app.database import SessionLocal
+from services.appointment_service import AppointmentService
+from models.appointment import AppointmentStatus
+from database import SessionLocal
 
 @pytest.fixture
 def db():

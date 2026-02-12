@@ -2,9 +2,9 @@
 import pytest
 from datetime import date, timedelta
 from decimal import Decimal
-from app.services.inventory_service import InventoryService
-from app.models.inventory import InventoryTransactionType
-from app.database import SessionLocal
+from services.inventory_service import InventoryService
+from models.inventory import InventoryTransactionType
+from database import SessionLocal
 
 @pytest.fixture
 def db():

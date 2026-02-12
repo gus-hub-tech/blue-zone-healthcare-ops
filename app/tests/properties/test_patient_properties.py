@@ -2,9 +2,9 @@
 import pytest
 from hypothesis import given, strategies as st
 from datetime import date, datetime, timedelta
-from app.services.patient_service import PatientService
-from app.models.patient import Patient, PatientStatus
-from app.database import SessionLocal
+from services.patient_service import PatientService
+from models.patient import Patient, PatientStatus
+from database import SessionLocal
 import logging
 
 logger = logging.getLogger(__name__)

@@ -3,7 +3,7 @@ from sqlalchemy import Column, String, DateTime, ForeignKey, Boolean, Enum
 from sqlalchemy.sql import func
 from datetime import datetime
 import enum
-from app.models import Base
+from models import Base
 
 class AppointmentStatus(str, enum.Enum):
     """Appointment status enumeration"""

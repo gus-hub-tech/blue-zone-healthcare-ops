@@ -4,7 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from app.models.billing import BillingRecord, BillingItem, Payment, BillingStatus, PaymentStatus
+from models.billing import BillingRecord, BillingItem, Payment, BillingStatus, PaymentStatus
 import logging
 
 logger = logging.getLogger(__name__)

@@ -3,20 +3,20 @@ import pytest
 from hypothesis import given, strategies as st, settings
 from datetime import date, datetime, timedelta
 from decimal import Decimal
-from app.services.patient_service import PatientService
-from app.services.appointment_service import AppointmentService
-from app.services.medical_record_service import MedicalRecordService
-from app.services.billing_service import BillingService
-from app.services.inventory_service import InventoryService
-from app.services.staff_service import StaffService
-from app.services.department_service import DepartmentService
-from app.services.prescription_service import PrescriptionService
-from app.services.access_control_service import AccessControlService
-from app.models.patient import PatientStatus
-from app.models.appointment import AppointmentStatus
-from app.models.prescription import PrescriptionStatus
-from app.models.inventory import InventoryTransactionType
-from app.database import SessionLocal
+from services.patient_service import PatientService
+from services.appointment_service import AppointmentService
+from services.medical_record_service import MedicalRecordService
+from services.billing_service import BillingService
+from services.inventory_service import InventoryService
+from services.staff_service import StaffService
+from services.department_service import DepartmentService
+from services.prescription_service import PrescriptionService
+from services.access_control_service import AccessControlService
+from models.patient import PatientStatus
+from models.appointment import AppointmentStatus
+from models.prescription import PrescriptionStatus
+from models.inventory import InventoryTransactionType
+from database import SessionLocal
 import logging
 
 logger = logging.getLogger(__name__)

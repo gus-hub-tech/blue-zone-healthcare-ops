@@ -2,7 +2,7 @@
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.config import settings
+from config import settings
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime

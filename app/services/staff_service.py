@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, date
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from app.models.staff import Staff, StaffRole, StaffStatus, StaffCredential, StaffAvailability
+from models.staff import Staff, StaffRole, StaffStatus, StaffCredential, StaffAvailability
 import logging
 
 logger = logging.getLogger(__name__)

@@ -1,9 +1,9 @@
 """Unit tests for department service"""
 import pytest
 from decimal import Decimal
-from app.services.department_service import DepartmentService
-from app.services.staff_service import StaffService
-from app.database import SessionLocal
+from services.department_service import DepartmentService
+from services.staff_service import StaffService
+from database import SessionLocal
 import uuid
 
 @pytest.fixture

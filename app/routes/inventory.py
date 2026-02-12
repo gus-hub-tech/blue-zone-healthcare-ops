@@ -5,8 +5,8 @@ from decimal import Decimal
 from datetime import date
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.services.inventory_service import InventoryService
+from database import get_db
+from services.inventory_service import InventoryService
 
 router = APIRouter(prefix="/inventory", tags=["inventory"])
 
@@ -78,6 +78,6 @@ def get_expired_items(db: Session = Depends(get_db)):
 @router.get("", response_model=List[InventoryItemResponse])
 def list_inventory(db: Session = Depends(get_db)):
     """List all inventory items"""
-    from app.models.inventory import InventoryItem
+    from models.inventory import InventoryItem
     items = db.query(InventoryItem).all()
     return items

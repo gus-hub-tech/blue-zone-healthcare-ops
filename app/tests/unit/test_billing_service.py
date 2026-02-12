@@ -1,9 +1,9 @@
 """Unit tests for billing service"""
 import pytest
 from decimal import Decimal
-from app.services.billing_service import BillingService
-from app.models.billing import BillingStatus, PaymentStatus
-from app.database import SessionLocal
+from services.billing_service import BillingService
+from models.billing import BillingStatus, PaymentStatus
+from database import SessionLocal
 
 @pytest.fixture
 def db():

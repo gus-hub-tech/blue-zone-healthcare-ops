@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, date
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from app.models.inventory import InventoryItem, InventoryTransaction, InventoryTransactionType
+from models.inventory import InventoryItem, InventoryTransaction, InventoryTransactionType
 import logging
 
 logger = logging.getLogger(__name__)

@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import List
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.services.medical_record_service import MedicalRecordService
+from database import get_db
+from services.medical_record_service import MedicalRecordService
 
 router = APIRouter(prefix="/medical-records", tags=["medical-records"])
 

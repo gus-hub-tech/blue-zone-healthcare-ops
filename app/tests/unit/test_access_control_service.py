@@ -1,8 +1,8 @@
 """Unit tests for access control service"""
 import pytest
-from app.services.access_control_service import AccessControlService
-from app.models.access_control import UserRole
-from app.database import SessionLocal
+from services.access_control_service import AccessControlService
+from models.access_control import UserRole
+from database import SessionLocal
 import uuid
 
 @pytest.fixture
